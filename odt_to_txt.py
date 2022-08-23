@@ -24,7 +24,7 @@ warnings = []
 def get_args(argv):
     ap = argparse.ArgumentParser(
         description="Run LibreOffice to convert document files to text files. "
-        + "Handles .otd, .doc, and .docx file formats."
+        + "Handles .odt, .doc, and .docx file formats."
     )
 
     ap.add_argument(

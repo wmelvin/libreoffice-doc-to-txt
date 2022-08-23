@@ -16,7 +16,7 @@ In addition to the **.odt** format used by LibreOffice, it can read Microsoft Wo
 ```
 usage: odt_to_txt.py [-h] [-r] [-o] [-d] [paths [paths ...]]
 
-Run LibreOffice to convert document files to text files. Handles .otd, .doc,
+Run LibreOffice to convert document files to text files. Handles .odt, .doc,
 and .docx file formats.
 
 positional arguments:
