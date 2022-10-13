@@ -24,7 +24,7 @@ warnings = []
 def get_args(argv):
     ap = argparse.ArgumentParser(
         description="Run LibreOffice to convert document files to text files. "
-        + "Handles .odt, .doc, and .docx file formats."
+        "Handles .odt, .doc, and .docx file formats."
     )
 
     ap.add_argument(
@@ -32,8 +32,8 @@ def get_args(argv):
         nargs="*",
         action="store",
         help="One or more files and/or directories to process. Files must "
-        + "be type (extension) '.odt', '.doc', or '.docx'. For directories, "
-        + "all files with one of those extensions will be processed.",
+        "be type (extension) '.odt', '.doc', or '.docx'. For directories, "
+        "all files with one of those extensions will be processed.",
     )
 
     ap.add_argument(
@@ -50,7 +50,7 @@ def get_args(argv):
         dest="do_overwrite",
         action="store_true",
         help="Overwrite existing output files. By default, existing files are "
-        + "not replaced.",
+        "not replaced.",
     )
 
     ap.add_argument(
@@ -59,7 +59,7 @@ def get_args(argv):
         dest="dt_tag",
         action="store_true",
         help="Add a [date_time] tag, based on the source document last "
-        + "modified timestamp, to the output file names.",
+        "modified timestamp, to the output file names.",
     )
 
     return ap.parse_args(argv[1:])
@@ -92,7 +92,7 @@ def make_wrapped_version(source_path: Path, opts: AppOptions):
         with open(source_path) as r:
             for line_in in r.readlines():
                 wrapped = textwrap.wrap(line_in, width=WRAP_WIDTH)
-                if 0 < len(wrapped):
+                if wrapped:
                     for line_out in wrapped:
                         w.write(f"{line_out}\n")
                 else:
@@ -117,7 +117,7 @@ def run_convert_to_txt(in_path: Path, opts: AppOptions):
         warnings.append(f"SKIP EXISTING '{new_name}'")
         warnings.append(
             "  Existing files are not overwritten unless the --overwrite "
-            + "(-o) option is used."
+            "(-o) option is used."
         )
         return
 
@@ -204,7 +204,7 @@ def main(argv):
     opts = get_options(argv)
     process_paths(opts)
 
-    if 0 < len(warnings):
+    if warnings:
         print("\nWARNINGS:")
         for warning in warnings:
             print(warning)
