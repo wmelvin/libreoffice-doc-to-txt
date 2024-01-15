@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import argparse
 import shutil
 import subprocess
 import sys
 import textwrap
-
-from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
-from typing import List
-
+from typing import NamedTuple
 
 WRAP_WIDTH = 112
 
-AppOptions = namedtuple(
-    "AppOptions", "path_list, do_recurse, do_overwrite, dt_tag"
-)
+
+class AppOptions(NamedTuple):
+    path_list: list[str]
+    do_recurse: bool
+    do_overwrite: bool
+    dt_tag: bool
+
 
 warnings = []
 
@@ -67,19 +70,17 @@ def get_args(argv):
 
 def get_options(argv) -> AppOptions:
     args = get_args(argv)
-    return AppOptions(
-        args.paths, args.do_recurse, args.do_overwrite, args.dt_tag
-    )
+    return AppOptions(args.paths, args.do_recurse, args.do_overwrite, args.dt_tag)
 
 
 def get_date_time_tag(file: Path) -> str:
-    assert file.exists()
+    assert file.exists()  # noqa: S101
     dt = datetime.fromtimestamp(file.stat().st_mtime)
     return dt.strftime("%Y%m%d_%H%M")
 
 
 def make_wrapped_version(source_path: Path, opts: AppOptions):
-    assert source_path.exists()
+    assert source_path.exists()  # noqa: S101
 
     target_path = source_path.parent / f"{source_path.stem}-wrap.txt"
 
@@ -88,27 +89,24 @@ def make_wrapped_version(source_path: Path, opts: AppOptions):
     #     return
 
     print(f"Wrap: '{target_path}'")
-    with open(target_path, "w") as w:
-        with open(source_path) as r:
-            for line_in in r.readlines():
-                wrapped = textwrap.wrap(line_in, width=WRAP_WIDTH)
-                if wrapped:
-                    for line_out in wrapped:
-                        w.write(f"{line_out}\n")
-                else:
-                    w.write("\n")
+    with target_path.open("w") as w, source_path.open() as r:
+        for line_in in r.readlines():
+            wrapped = textwrap.wrap(line_in, width=WRAP_WIDTH)
+            if wrapped:
+                for line_out in wrapped:
+                    w.write(f"{line_out}\n")
+            else:
+                w.write("\n")
 
 
 def run_convert_to_txt(in_path: Path, opts: AppOptions):
-    assert isinstance(in_path, Path)
+    assert isinstance(in_path, Path)  # noqa: S101
 
     print(f"ODT: '{in_path}'")
 
     if opts.dt_tag:
         new_name = str(
-            in_path.with_suffix(
-                f"{in_path.suffix}-{get_date_time_tag(in_path)}-as.txt"
-            )
+            in_path.with_suffix(f"{in_path.suffix}-{get_date_time_tag(in_path)}-as.txt")
         )
     else:
         new_name = str(in_path.with_suffix(f"{in_path.suffix}-as.txt"))
@@ -132,10 +130,10 @@ def run_convert_to_txt(in_path: Path, opts: AppOptions):
         str(in_path),
     ]
 
-    subprocess.check_call(cmd, stderr=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stderr=subprocess.DEVNULL)  # noqa: S603
 
     out_path = in_path.with_suffix(".txt")
-    assert out_path.exists()
+    assert out_path.exists()  # noqa: S101
 
     print(f"  as: '{new_name}'")
 
@@ -144,7 +142,7 @@ def run_convert_to_txt(in_path: Path, opts: AppOptions):
     make_wrapped_version(Path(new_name), opts)
 
 
-def get_files(dir_path: Path, file_ext: str, opts: AppOptions) -> List[Path]:
+def get_files(dir_path: Path, file_ext: str, opts: AppOptions) -> list[Path]:
     if opts.do_recurse:
         files = sorted(dir_path.glob(f"**/*{file_ext}"))
     else:
@@ -158,8 +156,7 @@ def get_files(dir_path: Path, file_ext: str, opts: AppOptions) -> List[Path]:
     return files
 
 
-def process_paths(opts: AppOptions):
-
+def process_paths(opts: AppOptions):  # noqa: PLR0912
     for name in opts.path_list:
         p = Path(name)
 
@@ -168,7 +165,7 @@ def process_paths(opts: AppOptions):
             continue
 
         if p.is_file():
-            if not p.suffix.lower() in [".odt", ".doc", ".docx"]:
+            if p.suffix.lower() not in [".odt", ".doc", ".docx"]:
                 warnings.append("Not a supported file type: '{p}'")
                 continue
             run_convert_to_txt(p, opts)
@@ -188,11 +185,8 @@ def process_paths(opts: AppOptions):
 
             files = get_files(p, ".bak", opts)
             for f in files:
-                if ".odt" in f.name:
-                    run_convert_to_txt(f, opts)
-                elif ".docx" in f.name:
-                    run_convert_to_txt(f, opts)
-                elif ".doc" in f.name:
+                if ".odt" in f.name or ".doc" in f.name:
+                    #  '.doc' also matches '.docx'
                     run_convert_to_txt(f, opts)
                 else:
                     print(f"SKIP: {f}")
