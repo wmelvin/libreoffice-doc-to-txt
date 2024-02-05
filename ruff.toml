@@ -21,7 +21,7 @@ select = [
     "SIM",  # flake8-simplify
     "W"     # Warning
 ]
-ignore = ["ISC001"]
+# ignore = ["ISC001"]
 # extend-select = ["ALL"]
 
 [lint.per-file-ignores]

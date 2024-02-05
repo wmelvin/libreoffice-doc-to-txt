@@ -14,7 +14,7 @@ In addition to the **.odt** format used by LibreOffice, it can read Microsoft Wo
 ## Command Line Usage ##
 
 ```
-usage: odt_to_txt.py [-h] [-r] [-o] [-d] [paths [paths ...]]
+usage: odt_to_txt.py [-h] [-r] [-o] [-d] [paths ...]
 
 Run LibreOffice to convert document files to text files. Handles .odt, .doc,
 and .docx file formats.
@@ -25,7 +25,7 @@ positional arguments:
                       directories, all files with one of those extensions will
                       be processed.
 
-optional arguments:
+options:
   -h, --help          show this help message and exit
   -r, --recurse       Do recursive search for document files in sub-
                       directories.

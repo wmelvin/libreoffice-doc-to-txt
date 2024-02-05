@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import shutil
 import subprocess
-import sys
 import textwrap
 from datetime import datetime
 from pathlib import Path
@@ -24,7 +23,7 @@ class AppOptions(NamedTuple):
 warnings = []
 
 
-def get_args(argv):
+def get_args(arglist=None):
     ap = argparse.ArgumentParser(
         description="Run LibreOffice to convert document files to text files. "
         "Handles .odt, .doc, and .docx file formats."
@@ -65,11 +64,11 @@ def get_args(argv):
         "modified timestamp, to the output file names.",
     )
 
-    return ap.parse_args(argv[1:])
+    return ap.parse_args(arglist)
 
 
-def get_options(argv) -> AppOptions:
-    args = get_args(argv)
+def get_options(arglist=None) -> AppOptions:
+    args = get_args(arglist)
     return AppOptions(args.paths, args.do_recurse, args.do_overwrite, args.dt_tag)
 
 
@@ -194,8 +193,8 @@ def process_paths(opts: AppOptions):  # noqa: PLR0912
             warnings.append(f"Cannot process path '{p}'.")
 
 
-def main(argv):
-    opts = get_options(argv)
+def main(arglist=None):
+    opts = get_options(arglist)
     process_paths(opts)
 
     if warnings:
@@ -207,4 +206,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    main()
